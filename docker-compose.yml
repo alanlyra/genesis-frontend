@@ -1,0 +1,27 @@
+version: "3.5"
+services:
+  frontend-service:
+    build:
+      context: ./
+      dockerfile: dockerfiles/node-lts
+    image: node-lts
+    volumes:
+      - ./app:/home/node/app
+    env_file:
+      - .env
+    stdin_open: true
+    command: sh -c "cd /home/node/app && yarn install --verbose && yarn ${PROJECT_ENVIRONMENT}"
+    tty: true
+    ports:
+      - ${GENESIS_FRONTEND_PORT}:${GENESIS_FRONTEND_PORT}
+    healthcheck:
+      test: curl --fail -s http://localhost:${GENESIS_FRONTEND_PORT}/ || exit 1
+      interval: 30s
+      timeout: 20s
+      retries: 2
+    restart: unless-stopped
+
+networks:
+  default:
+    external:
+      name: genesis_${PROJECT_ENVIRONMENT}
