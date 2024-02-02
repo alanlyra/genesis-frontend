@@ -1,1 +1,1 @@
-# senac-frontend
+# genesis-frontend
