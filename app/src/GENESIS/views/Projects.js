@@ -3,7 +3,6 @@ import { Row, Col, Card, Pagination, Button } from 'react-bootstrap';
 import BTable from 'react-bootstrap/Table';
 import { useTable, usePagination, useGlobalFilter } from 'react-table'
 
-//import makeData from '../../data/tableData';
 import ModuleNotification from '../../components/Widgets/Statistic/Notification';
 import { GlobalFilter } from './GlobalFilter';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
@@ -179,7 +178,7 @@ function App() {
             },
             id: 'startDate',
           },
-          , {
+          {
             Header: '#Files',
             accessor: row => (row.bibliometrics && row.bibliometrics.documents ? row.bibliometrics.documents.length : 0),
             id: 'documentsCount',
@@ -223,11 +222,6 @@ function App() {
 
   return (
     <React.Fragment>
-      <Row>
-        <Col sm={12}>
-          <ModuleNotification message="For more info please check the components's official documentation" link='https://react-table.tanstack.com/' />
-        </Col>
-      </Row>
       <Row>
         <Col>
           <Card>

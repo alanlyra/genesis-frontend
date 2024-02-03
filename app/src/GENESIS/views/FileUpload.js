@@ -52,11 +52,6 @@ const FileUpload = () => {
     return (
         <React.Fragment>
             <Row>
-                <Col sm={12}>
-                    <ModuleNotification message="For more info please check the components's official documentation" link='https://www.npmjs.com/package/react-dropzone-component' />
-                </Col>
-            </Row>
-            <Row>
                 <Col>
                     <Card>
                         <Card.Header>
