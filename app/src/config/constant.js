@@ -1,6 +1,6 @@
 export const BASENAME = '/datta-able/react/default'; // don't add '/' at end off BASENAME
 export const BASE_URL = '/app/dashboard/default';
-export const BASE_TITLE = ' | Datta Able Premium React Hooks + Redux Admin Template';
+export const BASE_TITLE = ' | Genesis';
 
 export const CONFIG = {
     layout: 'vertical', // vertical, horizontal

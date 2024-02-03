@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Card, Button } from 'react-bootstrap';
 import { DropzoneComponent } from 'react-dropzone-component';
 import axios from 'axios';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import ModuleNotification from '../../components/Widgets/Statistic/Notification';
 

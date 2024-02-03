@@ -7,6 +7,8 @@ import { useTable, usePagination, useGlobalFilter } from 'react-table'
 import ModuleNotification from '../../components/Widgets/Statistic/Notification';
 import { GlobalFilter } from './GlobalFilter';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { TiDocumentAdd } from "react-icons/ti";
+import { FcTimeline } from "react-icons/fc";
 
 function useGetProjects() {
   return useCallback(() => fetch('http://localhost:4100/get-projects')
@@ -158,14 +160,36 @@ function App() {
         Header: 'Project Info',
         columns: [
           {
-            Header: 'Project Name',
-            accessor: 'name',
-          }, {
             Header: 'Project ID',
             accessor: '_id',
+          }, {
+            Header: 'Project Name',
+            accessor: 'name',
           },
           {
-            Header: '',
+            Header: 'Description',
+            accessor: 'description',
+          },
+          {
+            Header: 'Creation',
+            accessor: row => {
+              const date = new Date(row.startDate);
+              date.setDate(date.getDate() + 1); //corrige falha no banco que salva a data com um dia a menos
+              return date.toLocaleDateString('pt-BR');
+            },
+            id: 'startDate',
+          },
+          , {
+            Header: '#Files',
+            accessor: row => (row.bibliometrics && row.bibliometrics.documents ? row.bibliometrics.documents.length : 0),
+            id: 'documentsCount',
+          },
+          {
+            Header: 'Status',
+            accessor: 'status',
+          },
+          {
+            Header: 'Actions',
             accessor: 'b',
             disableSortBy: true,
             Cell: ({ row }) => (
@@ -177,7 +201,16 @@ function App() {
                     history.push(`/genesis-file-upload/${_id}`);
                   }}
                 >
-                  Alo alo
+                  <TiDocumentAdd title={'Add documents'} size={28} style={{ margin: '0px', padding: '0px' }} />
+                </button>
+                <button
+                  className="btn btn-link"
+                  onClick={() => {
+                    const _id = row.original._id;
+                    history.push(`/genesis-file-upload/${_id}`);
+                  }}
+                >
+                  <FcTimeline title={'Roadmap'} size={28} style={{ margin: '0px', padding: '0px' }} />
                 </button>
               </div>
             ),
@@ -185,7 +218,7 @@ function App() {
         ],
       }
     ],
-    []
+    [history]
   )
 
   return (
