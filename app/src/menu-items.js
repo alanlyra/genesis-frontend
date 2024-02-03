@@ -1,6 +1,20 @@
 const menuItems = {
     items: [
         {
+            id: 'genesis',
+            title: 'Genesis',
+            type: 'group',
+            icon: 'icon-navigation',
+            children: [
+                {
+                    id: 'projects',
+                    title: 'Projects',
+                    type: 'item',
+                    url: '/genesis-projects',
+                }
+            ]
+        },
+        {
             id: 'navigation',
             title: 'Navigation',
             type: 'group',

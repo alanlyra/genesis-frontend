@@ -712,8 +712,13 @@ const routes = [
       },
       {
         exact: true,
-        path: '/genesis-file-upload',
+        path: '/genesis-file-upload/:_id',
         component: lazy(() => import('./GENESIS/views/FileUpload'))
+      },
+      {
+        exact: true,
+        path: '/genesis-projects',
+        component: lazy(() => import('./GENESIS/views/Projects'))
       },
       {
         exact: true,

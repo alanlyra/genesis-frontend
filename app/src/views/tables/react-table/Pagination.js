@@ -161,6 +161,7 @@ function App() {
   )
 
   const data = React.useMemo(() => makeData(500), [])
+  console.log(data);
 
     return (
         <React.Fragment>
