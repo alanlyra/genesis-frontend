@@ -1,23 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import GetProjects from '../connections/ProjectsConnection';
+import React, { useEffect, useState } from 'react'
 import { Row, Col, Card, Pagination, Button } from 'react-bootstrap';
 import BTable from 'react-bootstrap/Table';
 import { useTable, usePagination, useGlobalFilter } from 'react-table'
 
-import ModuleNotification from '../../components/Widgets/Statistic/Notification';
-import { GlobalFilter } from './GlobalFilter';
+import { GlobalFilter } from '../../../utils/GlobalFilter';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { TiDocumentAdd } from "react-icons/ti";
 import { FcTimeline } from "react-icons/fc";
-
-function useGetProjects() {
-  return useCallback(() => fetch('http://localhost:4100/get-projects')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    }), []);
-}
 
 function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
@@ -144,7 +134,7 @@ function Table({ columns, data }) {
 function Projects() {
 
   const history = useHistory();
-  const getProjects = useGetProjects();
+  const getProjects = GetProjects();
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -197,7 +187,7 @@ function Projects() {
                   className="btn btn-link"
                   onClick={() => {
                     const _id = row.original._id;
-                    history.push(`/genesis-file-upload/${_id}`);
+                    history.push(`/documents/${_id}`);
                   }}
                 >
                   <TiDocumentAdd title={'Add documents'} size={28} style={{ margin: '0px', padding: '0px' }} />
@@ -206,7 +196,7 @@ function Projects() {
                   className="btn btn-link"
                   onClick={() => {
                     const _id = row.original._id;
-                    history.push(`/genesis-file-upload/${_id}`);
+                    history.push(`/documents/${_id}`);
                   }}
                 >
                   <FcTimeline title={'Roadmap'} size={28} style={{ margin: '0px', padding: '0px' }} />
@@ -239,11 +229,7 @@ function Projects() {
         <Card title="Sizes [ Small ]">
           <Button variant='primary' size='sm' onClick={() => {
             const _id = '123';
-            history.push(`/genesis-file-upload/${_id}`);
-            // history.push({
-            //   pathname: '/genesis-file-upload',
-            //   state: { _id: 'fileTest' }
-            // });
+            history.push(`/documents/${_id}`);
           }}>Small Button</Button>
         </Card>
       </Col>

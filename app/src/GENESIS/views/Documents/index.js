@@ -4,9 +4,9 @@ import { DropzoneComponent } from 'react-dropzone-component';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-import Projects from './Projects'
+import Projects from '../Projects/components/Projects'
 
-const FileUpload = () => {
+const Documents = () => {
 
     const [dropzone, setDropzone] = useState(null);
     const { _id } = useParams();
@@ -75,4 +75,4 @@ const FileUpload = () => {
     );
 }
 
-export default FileUpload;
+export default Documents;

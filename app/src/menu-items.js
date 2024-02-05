@@ -10,7 +10,7 @@ const menuItems = {
                     id: 'projects',
                     title: 'Projects',
                     type: 'item',
-                    url: '/genesis-projects',
+                    url: '/projects',
                 }
             ]
         },

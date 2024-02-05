@@ -170,6 +170,18 @@ const routes = [
     layout: AdminLayout,
     guard: AuthGuard,
     routes: [
+      //Páginas do GENESIS
+      {
+        exact: true,
+        path: '/documents/:_id',
+        component: lazy(() => import('./GENESIS/views/Documents'))
+      },
+      {
+        exact: true,
+        path: '/projects',
+        component: lazy(() => import('./GENESIS/views/Projects'))
+      },
+      //Páginas padrões do template
       {
         exact: true,
         path: '/app/dashboard/default',
@@ -709,16 +721,6 @@ const routes = [
         exact: true,
         path: '/file-upload',
         component: lazy(() => import('./views/extensions/FileUpload'))
-      },
-      {
-        exact: true,
-        path: '/genesis-file-upload/:_id',
-        component: lazy(() => import('./GENESIS/views/FileUpload'))
-      },
-      {
-        exact: true,
-        path: '/genesis-projects',
-        component: lazy(() => import('./GENESIS/views/Projects'))
       },
       {
         exact: true,
