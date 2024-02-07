@@ -28,7 +28,7 @@ function Documents({data, setData}) {
         columns: [
           {
             Header: 'Document Name',
-            accessor: 'name',
+            accessor: 'title',
           },
           {
             Header: 'Description',
@@ -58,7 +58,6 @@ function Documents({data, setData}) {
                   onClick={() => {
                     const _id = row.original._id;
                     history.push(`/documents/${_id}`);
-                    //window.location.reload();
                   }}
                 >
                   <TiDocumentAdd title={'Add documents'} size={28} style={{ margin: '0px', padding: '0px' }} />
