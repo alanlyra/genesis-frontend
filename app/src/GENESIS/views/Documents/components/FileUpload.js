@@ -4,9 +4,7 @@ import { DropzoneComponent } from 'react-dropzone-component';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-import Documents from './Documents'
-
-const FileUpload = () => {
+const FileUpload = ({data, setData}) => {
 
     const [dropzone, setDropzone] = useState(null);
     const { _id } = useParams();
@@ -30,17 +28,18 @@ const FileUpload = () => {
     };
 
     const handlePost = () => {
-        dropzone.files.forEach(file => {
+        dropzone.files.forEach(async file => {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('_id', _id);
 
-            axios.post('http://localhost:4100/pdf/upload', formData).then(() => {
-                console.log('File uploaded successfully');
-            }).catch((error) => {
-                console.log('deu erro')
-                // console.error('Error uploading file: ', error);
-            });
+            try {
+                const response = await axios.post('http://localhost:4100/pdf/upload', formData)
+                setData(response.data)
+            } catch (error) {
+                console.log(error);
+            }
+            
         });
     }
 
@@ -69,7 +68,7 @@ const FileUpload = () => {
                     </Card>
                 </Col>
             </Row>
-            <Documents />
+            
         </React.Fragment>
 
     );

@@ -4,11 +4,9 @@ import Projects from './components/Projects';
 
 function App() {
   return (
-    <Router>
-      <Switch>
-        <Route path="/" component={Projects} />
-      </Switch>
-    </Router>
+    <React.Fragment>
+      <Projects/>
+    </React.Fragment>
   );
 }
 

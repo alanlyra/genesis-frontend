@@ -6,18 +6,20 @@ import { FcTimeline } from "react-icons/fc";
 import Table from './Table';
 import GetDocuments from '../connections/DocumentsConnection';
 
-function Documents() {
+function Documents({data, setData}) {
   const history = useHistory();
   const location = useLocation();
   const _id = location.pathname.split('/').pop();
   const getDocuments = GetDocuments(_id);
-  const [data, setData] = useState([]);
+  
+  const loadDocuments = async () => {
+    const documents = await getDocuments();
+    setData(documents);
+  }
 
   useEffect(() => {
-    getDocuments().then(setData).catch(console.error);
-  }, [getDocuments]);
-
-  console.log(data);
+    loadDocuments()
+  }, []);
 
   const columns = React.useMemo(
     () => [
