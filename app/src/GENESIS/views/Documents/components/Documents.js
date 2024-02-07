@@ -27,9 +27,6 @@ function Documents({data, setData}) {
         Header: 'Document Info',
         columns: [
           {
-            Header: 'Document ID',
-            accessor: '_id',
-          }, {
             Header: 'Document Name',
             accessor: 'name',
           },
@@ -41,7 +38,7 @@ function Documents({data, setData}) {
             Header: 'Upload Date',
             accessor: row => {
               const date = new Date(row.uploadDate);
-              date.setDate(date.getDate() + 1); //corrige falha no banco que salva a data com um dia a menos
+              //date.setDate(date.getDate() + 1); //corrige falha no banco que salva a data com um dia a menos
               return date.toLocaleDateString('pt-BR');
             },
             id: 'startDate',

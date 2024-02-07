@@ -23,9 +23,6 @@ function Projects() {
         Header: 'Project Info',
         columns: [
           {
-            Header: 'Project ID',
-            accessor: '_id',
-          }, {
             Header: 'Project Name',
             accessor: 'name',
           },

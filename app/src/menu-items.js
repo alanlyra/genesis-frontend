@@ -10,6 +10,7 @@ const menuItems = {
                     id: 'projects',
                     title: 'Projects',
                     type: 'item',
+                    icon: 'feather icon-layout',
                     url: '/projects',
                 }
             ]
