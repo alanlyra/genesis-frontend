@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import FileUpload from './components/FileUpload';
 import Documents from './components/Documents';
 
