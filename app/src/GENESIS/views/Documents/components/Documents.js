@@ -35,6 +35,10 @@ function Documents({data, setData}) {
             accessor: 'description',
           },
           {
+            Header: 'Author(s)',
+            accessor: row => (row.author && row.athor != "" ? row.author : row.creator),
+          },
+          {
             Header: 'Upload Date',
             accessor: row => {
               const date = new Date(row.uploadDate);
