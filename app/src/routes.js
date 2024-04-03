@@ -181,6 +181,11 @@ const routes = [
         path: '/projects',
         component: lazy(() => import('./GENESIS/views/Projects'))
       },
+      {
+        exact: true,
+        path: '/roadmap/project/:_id',
+        component: lazy(() => import('./GENESIS/views/Roadmaps'))
+      },
       //Páginas padrões do template
       {
         exact: true,

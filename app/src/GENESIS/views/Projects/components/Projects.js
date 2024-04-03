@@ -68,7 +68,7 @@ function Projects() {
                   className="btn btn-link"
                   onClick={() => {
                     const _id = row.original._id;
-                    history.push(`/documents/${_id}`);
+                    history.push(`/roadmap/project/${_id}`);
                   }}
                 >
                   <FcTimeline title={'Roadmap'} size={28} style={{ margin: '0px', padding: '0px' }} />
