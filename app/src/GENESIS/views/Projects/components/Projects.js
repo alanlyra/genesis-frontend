@@ -100,6 +100,16 @@ function Projects() {
             id: 'documentsCount',
           },
           {
+            Header: '#Events',
+            //Aqui decidimos contar apenas os eventos que possuem data de previsão e que não foram deletados
+            accessor: row => (
+              row.roadmap 
+                ? row.roadmap.filter(item => item.forecastDate !== null && item.deleted !== true).length 
+                : 0
+            ),
+            id: 'eventsRoadmapCount',
+          },
+          {
             Header: 'Status',
             accessor: 'status',
           },

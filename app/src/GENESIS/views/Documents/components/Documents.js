@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Button, Modal, Form } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { TiEdit, TiTrash, TiDocumentAdd } from "react-icons/ti";
+import { TiEdit } from "react-icons/ti";
 import { FcTimeline } from "react-icons/fc";
 import axios from 'axios';
 import Table from './Table';
@@ -12,10 +12,14 @@ function Documents({ data, setData }) {
   const location = useLocation();
   const _id = location.pathname.split('/').pop();
   const getDocuments = GetDocuments(_id);
+  const [idProject, setIdProject] = useState(null);
+  const [roadmapProject, setRoadmapProject] = useState(null);
 
   const loadDocuments = async () => {
-    const documents = await getDocuments();
-    setData(documents);
+  const projectWithDocuments = await getDocuments();
+  setData(projectWithDocuments.bibliometrics.documents);
+  setIdProject(projectWithDocuments._id);
+  setRoadmapProject(projectWithDocuments.roadmap);
   }
 
   useEffect(() => {
@@ -80,6 +84,14 @@ function Documents({ data, setData }) {
             id: 'startDate',
           },
           {
+            Header: '#Events',
+            accessor: row => (
+              roadmapProject 
+                ? roadmapProject.filter(item => item.forecastDate !== null && item.deleted !== true && item.document === row._id).length 
+                : 0
+            ),
+          },
+          {
             Header: 'Status',
             accessor: 'status',
           },
@@ -113,7 +125,7 @@ function Documents({ data, setData }) {
         ],
       }
     ],
-    [history]
+    [history, idProject,roadmapProject]
   )
 
   return (
