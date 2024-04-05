@@ -14,6 +14,7 @@ function GetRoadmap(_id, mode) {
             return response.data;
         })
         .catch(error => {
+            return [];
             throw new Error('Error fetching projects: ' + error.message);
         }), [_id]);
 }
