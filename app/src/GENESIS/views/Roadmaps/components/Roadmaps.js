@@ -10,8 +10,9 @@ function Roadmap({ data, setData }) {
   const history = useHistory();
   const location = useLocation();
   const _id = location.pathname.split('/').pop();
-  const getRoadmap = GetRoadmap(_id);
-
+  let getRoadmap = null;
+  if(location.pathname.includes('/document')) getRoadmap = GetRoadmap(_id, 'document');
+  else getRoadmap = GetRoadmap(_id, 'project');
 
   const loadRoadmap = async () => {
     const roadmap = await getRoadmap();
@@ -26,7 +27,7 @@ function Roadmap({ data, setData }) {
     data.length > 0 && (
       <div className="timeline-container">
         {data.map((item, idx) => (
-          item.forecastDate !== null ? (
+          item.forecastDate !== null && !item.deleted ? (
             <TimelineItem item={item} key={idx} />
           ) : null
         ))}
@@ -36,7 +37,10 @@ function Roadmap({ data, setData }) {
   const TimelineItem = ({ item, idx }) => {
     const [show, setShow] = useState(false);
     const [editedItem, setEditedItem] = useState({ ...item });
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const updateItemRoadmap = useUpdateItemRoadmap();
+    const softDeleteItemRoadmap = useSoftDeleteItemRoadmap();
+    const deleteItemRoadmap = useDeleteItemRoadmap();
 
     const isMounted = useRef(true);
 
@@ -45,6 +49,14 @@ function Roadmap({ data, setData }) {
         isMounted.current = false;
       };
     }, []);
+
+    const handleDeleteConfirm = () => {
+      setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteCancel = () => {
+      setShowDeleteConfirm(false);
+    };
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -56,6 +68,39 @@ function Roadmap({ data, setData }) {
           setData(updatedData);
           if (isMounted.current) {
             setShow(false);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+
+    const handleDelete = () => {
+      deleteItemRoadmap(item._id)
+        .then(updatedItem => {
+          //console.log(updatedItem);
+          const updatedData = data.map(dataItem => dataItem._id === item._id ? updatedItem : dataItem);
+          setData(updatedData);
+          if (isMounted.current) {
+            setShowDeleteConfirm(false);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    const handleSoftDelete = () => {
+      editedItem.deleted = true;
+      editedItem.deletedDate = new Date();
+      softDeleteItemRoadmap(item._id, editedItem)
+        .then(updatedItem => {
+          //console.log(updatedItem);
+          const updatedData = data.map(dataItem => dataItem._id === item._id ? updatedItem : dataItem);
+          setData(updatedData);
+          if (isMounted.current) {
+            setShowDeleteConfirm(false);
           }
         })
         .catch(error => {
@@ -83,20 +128,20 @@ function Roadmap({ data, setData }) {
           <span className="circle" />
         </div>
 
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Edit Details</Modal.Title>
+            <Modal.Title>Update Event</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
               <Form.Group controlId="formForecastDate">
-                <Form.Label>Forecast Date</Form.Label>
+                <Form.Label>Date</Form.Label>
                 <Form.Control type="text" name="forecastDate" value={editedItem.forecastDate} onChange={handleChange} />
               </Form.Group>
 
               <Form.Group controlId="formForecast">
-                <Form.Label>Forecast</Form.Label>
-                <Form.Control type="text" name="forecast" value={editedItem.forecast} onChange={handleChange} />
+                <Form.Label>Event</Form.Label>
+                <Form.Control as="textarea" name="forecast" value={editedItem.forecast} onChange={handleChange} />
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -104,9 +149,29 @@ function Roadmap({ data, setData }) {
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
+            <Button variant="danger" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
             <Button variant="primary" onClick={handleSave}>
               Save Changes
             </Button>
+
+            <Modal show={showDeleteConfirm} onHide={handleDeleteCancel} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleDeleteCancel}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={handleSoftDelete}>
+                  Delete
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </Modal.Footer>
         </Modal>
       </div>
@@ -287,7 +352,37 @@ function Roadmap({ data, setData }) {
 
 function useUpdateItemRoadmap() {
   return useCallback((_id, updatedItem) => {
-    return axios.put(`${process.env.REACT_APP_BACKEND_URL}/edit-item-roadmap/${_id}`, updatedItem)
+    return axios.put(`${process.env.REACT_APP_BACKEND_URL}/events-roadmap/${_id}`, updatedItem)
+      .then(response => {
+        if (response.status !== 200) {
+          throw new Error('Network response was not ok');
+        }
+        return response.data;
+      })
+      .catch(error => {
+        throw new Error('Error fetching roadmap item: ' + error.message);
+      });
+  }, []);
+}
+
+function useDeleteItemRoadmap() {
+  return useCallback((_id) => {
+    return axios.delete(`${process.env.REACT_APP_BACKEND_URL}/events-roadmap/${_id}`)
+      .then(response => {
+        if (response.status !== 200) {
+          throw new Error('Network response was not ok');
+        }
+        return response.data;
+      })
+      .catch(error => {
+        throw new Error('Error fetching roadmap item: ' + error.message);
+      });
+  }, []);
+}
+
+function useSoftDeleteItemRoadmap() {
+  return useCallback((_id, updatedItem) => {
+    return axios.put(`${process.env.REACT_APP_BACKEND_URL}/events-roadmap/${_id}`, updatedItem)
       .then(response => {
         if (response.status !== 200) {
           throw new Error('Network response was not ok');

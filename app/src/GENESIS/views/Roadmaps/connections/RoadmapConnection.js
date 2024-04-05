@@ -1,8 +1,12 @@
 import { useCallback } from 'react';
 import axios from 'axios';
 
-function GetDocuments(_id) {
-    return useCallback(() => axios.get(`${process.env.REACT_APP_BACKEND_URL}/get-roadmap/${_id}`)
+function GetRoadmap(_id, mode) {
+    let endpoint = '/roadmap/';
+    if (mode == 'document') {
+       endpoint = '/roadmap/document/';
+    }
+    return useCallback(() => axios.get(`${process.env.REACT_APP_BACKEND_URL}${endpoint}${_id}`)
         .then(response => {
             if (response.status !== 200) {
                 throw new Error('Network response was not ok');
@@ -14,4 +18,4 @@ function GetDocuments(_id) {
         }), [_id]);
 }
 
-export default GetDocuments;
+export default GetRoadmap;

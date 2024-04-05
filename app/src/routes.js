@@ -173,6 +173,11 @@ const routes = [
       //Páginas do GENESIS
       {
         exact: true,
+        path: '/home',
+        component: lazy(() => import('./GENESIS/views/Home'))
+      },
+      {
+        exact: true,
         path: '/documents/:_id',
         component: lazy(() => import('./GENESIS/views/Documents'))
       },
@@ -184,6 +189,11 @@ const routes = [
       {
         exact: true,
         path: '/roadmap/project/:_id',
+        component: lazy(() => import('./GENESIS/views/Roadmaps'))
+      },
+      {
+        exact: true,
+        path: '/roadmap/document/:_id',
         component: lazy(() => import('./GENESIS/views/Roadmaps'))
       },
       //Páginas padrões do template

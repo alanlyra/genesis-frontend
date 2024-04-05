@@ -7,6 +7,13 @@ const menuItems = {
             icon: 'icon-navigation',
             children: [
                 {
+                    id: 'home',
+                    title: 'Home',
+                    type: 'item',
+                    icon: 'feather icon-home',
+                    url: '/home',
+                },
+                {
                     id: 'projects',
                     title: 'Projects',
                     type: 'item',
