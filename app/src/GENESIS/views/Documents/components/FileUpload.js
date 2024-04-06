@@ -4,7 +4,7 @@ import { DropzoneComponent } from 'react-dropzone-component';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-const FileUpload = ({data, setData}) => {
+const FileUpload = ({ data, setData }) => {
 
     const [dropzone, setDropzone] = useState(null);
     const { _id } = useParams();
@@ -28,19 +28,36 @@ const FileUpload = ({data, setData}) => {
     };
 
     const handlePost = () => {
-        dropzone.files.forEach(async file => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('_id', _id);
+        const fileManifestName = 'manifest-' + Date.now() + '.mf';
+        (async () => {
+            const uploadPromises = dropzone.files.map(async file => {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('_id', _id);
 
-            try {
-                const response = await axios.post('http://localhost:4100/pdf/upload', formData)
-                setData(response.data)
-            } catch (error) {
-                console.log(error);
-            }
-            
-        });
+                try {
+                    const response = await axios.post(`http://localhost:4100/pdf/upload?fileManifestName=${fileManifestName}`, formData);
+                    setData(response.data)
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+
+            // Aguarde todas as promessas serem resolvidas
+            await Promise.all(uploadPromises);
+
+            // Depois que todos os arquivos foram enviados, chame callQueue
+            await callQueue(fileManifestName);
+        })();
+    }
+
+    async function callQueue(fileManifestName) {
+        try {
+            const response = await axios.get(`http://localhost:4106/queue?fileManifestName=${fileManifestName}`);
+            //setData(response.data)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleFileAdded = (file) => {
@@ -68,7 +85,7 @@ const FileUpload = ({data, setData}) => {
                     </Card>
                 </Col>
             </Row>
-            
+
         </React.Fragment>
 
     );
