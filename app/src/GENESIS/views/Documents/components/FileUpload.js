@@ -64,7 +64,6 @@ const FileUpload = ({ data, setData }) => {
         console.log(file);
     }
 
-
     return (
 
         <React.Fragment>

@@ -72,7 +72,7 @@ function Documents({ data, setData }) {
           },
           {
             Header: 'Author(s)',
-            accessor: row => (row.author && row.athor != "" ? row.author : row.creator),
+            accessor: row => (row.author && row.author != "" ? row.author : row.creator),
           },
           {
             Header: 'Upload Date',
@@ -93,7 +93,7 @@ function Documents({ data, setData }) {
           },
           {
             Header: 'Status',
-            accessor: 'status',
+            accessor: 'roadmapStatus',
           },
           {
             Header: 'Actions',
