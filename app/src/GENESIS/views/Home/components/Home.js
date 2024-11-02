@@ -12,10 +12,11 @@ function Home() {
     status: 'Created',
     owner: '1',
     createdBy: '1',
-    createdDate: new Date()
-    // Adicione aqui outros campos do projeto
+    createdDate: new Date(),
+    keywords: [] // Adicione o campo keywords aqui
   });
 
+  const [tags, setTags] = useState([]);
   const [defaultSwitch, setDefaultSwitch] = useState(true);
 
   const toggleHandler = () => {
@@ -29,18 +30,53 @@ function Home() {
     });
   };
 
+  const handleAddition = (tag) => {
+    setTags([...tags, tag]);
+    setProject({
+      ...project,
+      keywords: [...project.keywords, tag.name]
+    });
+  };
+
+  const handleDelete = (i) => {
+    const newTags = tags.slice(0);
+    newTags.splice(i, 1);
+    setTags(newTags);
+    const newKeywords = project.keywords.slice(0);
+    newKeywords.splice(i, 1);
+    setProject({
+      ...project,
+      keywords: newKeywords
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
     axios.post(`${process.env.REACT_APP_BACKEND_URL}/projects`, project)
-      .then(response => {
-        console.log(response.data);
-        // Redirecionar para a página de projetos ou limpar o formulário
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+    .then(response => {
+      console.log(response.data);
+      // Redirecionar para a página de projetos ou limpar o formulário
+
+      // Supondo que o ID do projeto seja retornado na resposta
+      const projectId = response.data._id;
+
+      const workflowUrl = `${process.env.REACT_APP_BACKEND_URL}/workflow/project/${projectId}`;
+      console.log('Calling workflow endpoint:', workflowUrl);
+
+      axios.post(workflowUrl, project)
+        .then(response => {
+          console.log(response.data);
+          // Redirecionar para a página de projetos ou limpar o formulário
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -52,6 +88,17 @@ function Home() {
       <Form.Group controlId="formProjectDescription">
         <Form.Label>Project Description</Form.Label>
         <Form.Control as="textarea" name="description" value={project.description} onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group controlId="formProjectKeywords">
+        <Form.Label>Keywords</Form.Label>
+        <ReactTags
+          classNames={{root: 'react-tags bootstrap-tagsinput', selectedTag: 'react-tags__selected-tag btn-primary'}}
+          allowNew={true}
+          tags={tags}
+          onDelete={handleDelete}
+          onAddition={handleAddition}
+        />
       </Form.Group>
 
       <Form.Group controlId="formProjectStartDate">
