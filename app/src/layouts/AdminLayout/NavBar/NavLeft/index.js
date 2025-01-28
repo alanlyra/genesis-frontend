@@ -23,7 +23,7 @@ const NavLeft = () => {
 
     return (
         <React.Fragment>
-            <ListGroup as='ul' bsPrefix=' ' className="navbar-nav mr-auto">
+            {/* <ListGroup as='ul' bsPrefix=' ' className="navbar-nav mr-auto">
                 <ListGroup.Item as='li' bsPrefix=' ' className={navItemClass.join(' ')}>
                     <Dropdown alignRight={dropdownRightAlign}>
                         <Dropdown.Toggle variant={'link'} id="dropdown-basic">
@@ -41,7 +41,7 @@ const NavLeft = () => {
                 <ListGroup.Item as='li' bsPrefix=' ' className="nav-item">
                     <NavSearch windowWidth={windowSize.width}/>
                 </ListGroup.Item>
-            </ListGroup>
+            </ListGroup> */}
         </React.Fragment>
     );
 };

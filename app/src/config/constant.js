@@ -3,8 +3,8 @@ export const BASE_URL = '/home';
 export const BASE_TITLE = ' | Genesis';
 
 export const CONFIG = {
-    layout: 'vertical', // vertical, horizontal
-    subLayout: '', // null, layout-2, layout-2-2, layout-3, layout-4, layout-4-2, layout-6, layout-8
+    layout: 'horizontal', // vertical, horizontal
+    subLayout: 'horizontal-2', // null, layout-2, layout-2-2, layout-3, layout-4, layout-4-2, layout-6, layout-8
     collapseMenu: false, // mini-menu
     layoutType: 'menu-dark', // menu-dark, menu-light, dark
     navIconColor: false,
@@ -13,7 +13,7 @@ export const CONFIG = {
     navBrandColor: 'brand-default', // brand-default, brand-blue, brand-red, brand-purple, brand-lightblue, brand-dark
     navBackImage: false, // false, navbar-image-1, navbar-image-2, navbar-image-3, navbar-image-4, navbar-image-5
     rtlLayout: false,
-    navFixedLayout: true, // only for vertical layouts
+    navFixedLayout: false, // only for vertical layouts
     headerFixedLayout: false, // only for vertical layouts
     boxLayout: false,
     navDropdownIcon: 'style1', // style1, style2, style3

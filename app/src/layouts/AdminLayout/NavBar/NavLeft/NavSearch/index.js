@@ -31,7 +31,7 @@ const NavSearch = props => {
 
     return (
         <React.Fragment>
-            <div id="main-search" className={searchClass.join(' ')}>
+            {/* <div id="main-search" className={searchClass.join(' ')}>
                 <div className="input-group">
                     <input type="text" id="m-search" className="form-control" placeholder="Search . . ." style={{width: searchString}}/>
                     <Link to='#' className="input-group-append search-close" onClick={searchOffHandler}>
@@ -41,7 +41,7 @@ const NavSearch = props => {
                     <i className="feather icon-search input-group-text"/>
                 </span>
                 </div>
-            </div>
+            </div> */}
         </React.Fragment>
     );
 };

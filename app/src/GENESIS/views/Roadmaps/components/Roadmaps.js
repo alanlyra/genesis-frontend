@@ -7,6 +7,18 @@ import { useHistory, useLocation } from 'react-router-dom';
 import GetRoadmap from '../connections/RoadmapConnection';
 
 function Roadmap({ data, setData }) {
+  const [project, setProject] = useState({
+    name: '',
+    description: '',
+    startDate: '2024-01-01',
+    endDate: '2100-12-31',
+    status: 'Created',
+    owner: '1',
+    createdBy: '1',
+    createdDate: new Date(),
+    keywords: [] // Adicione o campo keywords aqui
+  });
+
   const history = useHistory();
   const location = useLocation();
   const _id = location.pathname.split('/').pop();
@@ -138,10 +150,13 @@ function Roadmap({ data, setData }) {
                 <Form.Label>Date</Form.Label>
                 <Form.Control type="text" name="forecastDate" value={editedItem.forecastDate} onChange={handleChange} />
               </Form.Group>
-
               <Form.Group controlId="formForecast">
                 <Form.Label>Event</Form.Label>
                 <Form.Control as="textarea" name="forecast" value={editedItem.forecast} onChange={handleChange} />
+              </Form.Group>
+              <Form.Group controlId="formSentence">
+                <Form.Label>Original Sentence</Form.Label>
+                <Form.Control as="textarea" name="sentence" value={editedItem.sentence} onChange={handleChange} readOnly/>
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -178,8 +193,45 @@ function Roadmap({ data, setData }) {
     );
   };
 
+  const handleRefine = (event) => {
+    event.preventDefault();
+    
+    axios.put(`${process.env.REACT_APP_BACKEND_URL}/refine/${_id}`, project._id)
+      .then(response => {
+        console.log(response.data);
+        //getProjects().then(setData).catch(console.error);
+        //setShowEditModal(false);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  const handleDownload = (event) => {
+    event.preventDefault();
+
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'roadmap-data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  
   return (
     <React.Fragment>
+
+      <div>
+        <Button variant="secondary" onClick={handleRefine} style={{ marginBottom: '20px' }}>
+          Refine
+        </Button>
+        <Button variant="secondary" onClick={handleDownload} style={{ marginBottom: '20px', float: 'right' }}>
+          Download
+        </Button>
+      </div>
 
       <Timeline />
 

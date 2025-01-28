@@ -90,7 +90,7 @@ function Home() {
         <Form.Control as="textarea" name="description" value={project.description} onChange={handleChange} />
       </Form.Group>
 
-      <Form.Group controlId="formProjectKeywords">
+      {/* <Form.Group controlId="formProjectKeywords">
         <Form.Label>Keywords</Form.Label>
         <ReactTags
           classNames={{root: 'react-tags bootstrap-tagsinput', selectedTag: 'react-tags__selected-tag btn-primary'}}
@@ -99,7 +99,7 @@ function Home() {
           onDelete={handleDelete}
           onAddition={handleAddition}
         />
-      </Form.Group>
+      </Form.Group> */}
 
       <Form.Group controlId="formProjectStartDate">
         <Form.Label>Start Date</Form.Label>

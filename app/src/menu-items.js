@@ -19,9 +19,17 @@ const menuItems = {
                     type: 'item',
                     icon: 'feather icon-layout',
                     url: '/projects',
+                },
+                {
+                    id: 'about',
+                    title: 'About Us',
+                    type: 'item',
+                    icon: 'feather icon-help-circle',
+                    url: '/home',
                 }
             ]
-        },
+        }
+       /*  ,
         {
             id: 'navigation',
             title: 'Navigation',
@@ -1149,7 +1157,7 @@ const menuItems = {
                     external: true
                 }
             ]
-        }
+        } */
     ]
 };
 

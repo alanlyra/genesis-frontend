@@ -109,16 +109,25 @@ function Projects() {
             ),
             id: 'eventsRoadmapCount',
           },
-          {
+          /* {
             Header: 'Status',
             accessor: 'status',
-          },
+          }, */
           {
             Header: 'Actions',
             accessor: 'b',
             disableSortBy: true,
             Cell: ({ row }) => (
               <div>
+                <button
+                  className="btn btn-link"
+                  onClick={() => {
+                    const _id = row.original._id;
+                    history.push(`/bibliometrics/${_id}`);
+                  }}
+                  >
+                    <TiEdit title={'Manage Bibliometrics'} size={28} style={{ margin: '0px', padding: '0px' }} />
+                  </button>
                 <button
                   className="btn btn-link"
                   onClick={() => {

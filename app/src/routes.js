@@ -195,6 +195,10 @@ const routes = [
         exact: true,
         path: '/roadmap/document/:_id',
         component: lazy(() => import('./GENESIS/views/Roadmaps'))
+      },{
+        exact: true,
+        path: '/bibliometrics/:_id',
+        component: lazy(() => import('./GENESIS/views/Bibliometrics'))
       },
       //Páginas padrões do template
       {
