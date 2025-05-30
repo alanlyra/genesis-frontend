@@ -200,6 +200,16 @@ const routes = [
         path: '/bibliometrics/:_id',
         component: lazy(() => import('./GENESIS/views/Bibliometrics'))
       },
+      {
+        exact: true,
+        path: '/scenarios/project/:_id',
+        component: lazy(() => import('./GENESIS/views/Scenarios'))
+      },
+      {
+        exact: true,
+        path: '/scenarios/document/:_id',
+        component: lazy(() => import('./GENESIS/views/Scenarios'))
+      },
       //Páginas padrões do template
       {
         exact: true,

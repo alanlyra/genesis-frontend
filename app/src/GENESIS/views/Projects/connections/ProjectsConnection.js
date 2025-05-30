@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import axios from 'axios';
+import {axios} from '../../../connection/axios-config';
 
 function GetProjects() {
     return useCallback(() => axios.get(process.env.REACT_APP_BACKEND_URL + '/projects')

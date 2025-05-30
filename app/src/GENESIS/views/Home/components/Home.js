@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Form, Button, Row, Col, Card } from 'react-bootstrap';
 import ReactTags from 'react-tag-autocomplete';
-import axios from 'axios';
+import { axios } from '../../../connection/axios-config';
 
 function Home() {
   const [project, setProject] = useState({

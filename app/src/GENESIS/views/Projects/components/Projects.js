@@ -148,6 +148,15 @@ function Projects() {
                 </button>
                 <button
                   className="btn btn-link"
+                  onClick={() => {
+                    const _id = row.original._id;
+                    history.push(`/scenarios/project/${_id}`);
+                  }}
+                >
+                  <TiEdit title={'Project Scenarios'} size={28} style={{ margin: '0px', padding: '0px' }} />
+                </button>
+                <button
+                  className="btn btn-link"
                   onClick={() => handleEdit(row.original)}
                 >
                   <TiEdit title={'Manage Project'} size={28} style={{ margin: '0px', padding: '0px' }} />
