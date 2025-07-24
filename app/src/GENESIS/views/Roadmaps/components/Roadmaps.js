@@ -16,7 +16,7 @@ function Roadmap({ data, setData }) {
     owner: '1',
     createdBy: '1',
     createdDate: new Date(),
-    keywords: [] // Adicione o campo keywords aqui
+    keywords: []
   });
 
   const history = useHistory();
@@ -35,18 +35,87 @@ function Roadmap({ data, setData }) {
     loadRoadmap()
   }, []);
 
-  const Timeline = () =>
-    data.length > 0 && (
-      <div className="timeline-container">
-        {data.map((item, idx) => (
-          item.forecastDate !== null && !item.deleted ? (
-            <TimelineItem item={item} key={idx} />
-          ) : null
-        ))}
-      </div>
-    );
+  // Referências para cada evento por ano
+  const eventRefs = useRef({});
 
-  const TimelineItem = ({ item, idx }) => {
+  // Extrai e ordena anos únicos válidos da timeline
+  const availableYears = Array.from(
+    new Set(
+      data
+        .map(item => {
+          const year = /^\d{4}$/.test(item.forecastDate) ? item.forecastDate : null;
+          return year;
+        })
+        .filter(Boolean)
+    )
+  ).sort();
+
+  // Estado para controlar o ano selecionado no seletor
+  const [selectedYearIdx, setSelectedYearIdx] = useState(0);
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+
+  // Função para rolar até o primeiro evento do ano selecionado
+  const scrollToYear = (year) => {
+    const ref = eventRefs.current[year];
+    if (ref && ref.scrollIntoView) {
+      ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const Timeline = () => {
+    // Ordena os dados por forecastDate crescente, datas inválidas vão para o final
+    const sortedData = [...data].sort((a, b) => {
+      const dateA = new Date(a.forecastDate);
+      const dateB = new Date(b.forecastDate);
+      const isValidA = !isNaN(dateA.getTime());
+      const isValidB = !isNaN(dateB.getTime());
+
+      if (isValidA && isValidB) {
+        return dateA - dateB;
+      }
+      if (isValidA) return -1; // a é data, b não é
+      if (isValidB) return 1;  // b é data, a não é
+      return 0; // ambos não são datas, mantém ordem original
+    });
+
+    // Limpa refs antes de renderizar
+    eventRefs.current = {};
+
+    return (
+      sortedData.length > 0 && (
+        <div className="timeline-container">
+          {sortedData.map((item, idx) => {
+            let year = /^\d{4}$/.test(item.forecastDate) ? item.forecastDate : null;
+            let ref = null;
+            if (year && !eventRefs.current[year]) {
+              ref = el => { if (el) eventRefs.current[year] = el; };
+            }
+            return item.forecastDate !== null && !item.deleted ? (
+              <TimelineItem item={item} idx={idx} key={item._id || idx} refProp={ref} />
+            ) : null;
+          })}
+        </div>
+      )
+    );
+  };
+
+  // Estado para modal de PDF
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const handleShowPdf = async (documentId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/documents/document/${documentId}`);
+      const fileName = response.data.name || response.data.URL;
+      const pdfUrl = `${process.env.REACT_APP_FILES_PATH}${fileName}`;
+      setPdfUrl(pdfUrl);
+      setShowPdfModal(true);
+    } catch (error) {
+      console.error('Erro ao buscar PDF:', error);
+    }
+  };
+
+  const TimelineItem = ({ item, idx, refProp }) => {
     const [show, setShow] = useState(false);
     const [editedItem, setEditedItem] = useState({ ...item });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -75,7 +144,6 @@ function Roadmap({ data, setData }) {
     const handleSave = () => {
       updateItemRoadmap(item._id, editedItem)
         .then(updatedItem => {
-          //console.log(updatedItem);
           const updatedData = data.map(dataItem => dataItem._id === item._id ? updatedItem : dataItem);
           setData(updatedData);
           if (isMounted.current) {
@@ -87,11 +155,9 @@ function Roadmap({ data, setData }) {
         });
     };
 
-
     const handleDelete = () => {
       deleteItemRoadmap(item._id)
         .then(updatedItem => {
-          //console.log(updatedItem);
           const updatedData = data.map(dataItem => dataItem._id === item._id ? updatedItem : dataItem);
           setData(updatedData);
           if (isMounted.current) {
@@ -108,7 +174,6 @@ function Roadmap({ data, setData }) {
       editedItem.deletedDate = new Date();
       softDeleteItemRoadmap(item._id, editedItem)
         .then(updatedItem => {
-          //console.log(updatedItem);
           const updatedData = data.map(dataItem => dataItem._id === item._id ? updatedItem : dataItem);
           setData(updatedData);
           if (isMounted.current) {
@@ -125,9 +190,14 @@ function Roadmap({ data, setData }) {
     };
 
     return (
-      <div key={idx} className="timeline-item">
+      <div ref={refProp} key={idx} className="timeline-item">
         <div className="timeline-item-content">
-          <span className="tag" style={{ background: '#018f69' }}>
+          <span
+            className="tag"
+            style={{ background: '#018f69', cursor: 'pointer' }}
+            onClick={() => handleShowPdf(item.document)}
+            title="Ver PDF do documento"
+          >
             article
           </span>
           <time>{item.forecastDate}</time>
@@ -191,16 +261,41 @@ function Roadmap({ data, setData }) {
         </Modal>
       </div>
     );
+    
   };
+
+  // Modal para exibir o PDF
+  const PdfModal = () => (
+    <Modal show={showPdfModal} onHide={() => setShowPdfModal(false)} size="xl" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Visualizar PDF</Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ height: '80vh', padding: 0 }}>
+        {pdfUrl ? (
+            <iframe
+            src={pdfUrl}
+            title="PDF Viewer"
+            width="100%"
+            height="100%"
+            style={{ border: 'none', minHeight: '70vh' }}
+          />
+        ) : (
+          <p>Carregando PDF...</p>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowPdfModal(false)}>
+          Fechar
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 
   const handleRefine = (event) => {
     event.preventDefault();
-    
     axios.put(`${process.env.REACT_APP_BACKEND_URL}/refine/${_id}`, project._id)
       .then(response => {
         console.log(response.data);
-        //getProjects().then(setData).catch(console.error);
-        //setShowEditModal(false);
       })
       .catch(error => {
         console.error(error);
@@ -209,7 +304,6 @@ function Roadmap({ data, setData }) {
 
   const handleDownload = (event) => {
     event.preventDefault();
-
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -220,10 +314,83 @@ function Roadmap({ data, setData }) {
     link.click();
     document.body.removeChild(link);
   }
-  
+
+  // Dropdown de anos com setas
+  const YearSelector = () => (
+    <div style={{
+      position: 'fixed',
+      top: 80,
+      right: 40,
+      zIndex: 2000,
+      background: '#fff',
+      border: '1px solid #ccc',
+      borderRadius: 8,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      width: 100,
+      textAlign: 'center',
+      userSelect: 'none'
+    }}>
+      <div
+        style={{ cursor: selectedYearIdx > 0 ? 'pointer' : 'not-allowed', padding: 4 }}
+        onClick={() => {
+          if (selectedYearIdx > 0) {
+            setSelectedYearIdx(selectedYearIdx - 1);
+            scrollToYear(availableYears[selectedYearIdx - 1]);
+          }
+        }}
+      >▲</div>
+      <div
+        style={{ padding: 8, fontWeight: 'bold', fontSize: 18, background: '#f7f7f7' }}
+        onClick={() => setShowYearDropdown(!showYearDropdown)}
+      >
+        {availableYears[selectedYearIdx] || 'Ano'}
+      </div>
+      <div
+        style={{ cursor: selectedYearIdx < availableYears.length - 1 ? 'pointer' : 'not-allowed', padding: 4 }}
+        onClick={() => {
+          if (selectedYearIdx < availableYears.length - 1) {
+            setSelectedYearIdx(selectedYearIdx + 1);
+            scrollToYear(availableYears[selectedYearIdx + 1]);
+          }
+        }}
+      >▼</div>
+      {showYearDropdown && (
+        <div style={{
+          position: 'absolute',
+          top: 40,
+          left: 0,
+          right: 0,
+          background: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: 8,
+          maxHeight: 200,
+          overflowY: 'auto'
+        }}>
+          {availableYears.map((year, idx) => (
+            <div
+              key={year}
+              style={{
+                padding: 6,
+                background: idx === selectedYearIdx ? '#e6f7ff' : '#fff',
+                cursor: 'pointer'
+              }}
+              onClick={() => {
+                setSelectedYearIdx(idx);
+                setShowYearDropdown(false);
+                scrollToYear(year);
+              }}
+            >
+              {year}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <React.Fragment>
-
+      <YearSelector />
       <div>
         <Button variant="secondary" onClick={handleRefine} style={{ marginBottom: '20px' }}>
           Refine
@@ -232,19 +399,16 @@ function Roadmap({ data, setData }) {
           Download
         </Button>
       </div>
-
       <Timeline />
-
+      <PdfModal />
       <style>
         {`
-          
           .timeline-container {
             display: flex;
             flex-direction: column;
             position: relative;
             margin: 40px 0;
         }
-        
         .timeline-container::after {
             background-color: #e17b77;
             content: '';
@@ -253,7 +417,6 @@ function Roadmap({ data, setData }) {
             width: 4px;
             height: 100%;
         }
-
         .timeline-item {
           display: flex;
           justify-content: flex-end;
@@ -262,14 +425,12 @@ function Roadmap({ data, setData }) {
             margin: 10px 0;
             width: 50%;
         }
-        
         .timeline-item:nth-child(odd) {
             align-self: flex-end;
             justify-content: flex-start;
             padding-left: 30px;
             padding-right: 0;
         }
-
         .timeline-item-content {
           box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
           border-radius: 5px;
@@ -283,7 +444,6 @@ function Roadmap({ data, setData }) {
           max-width: 70%;
           text-align: right;
       }
-      
       .timeline-item-content::after {
           content: ' ';
           background-color: #fff;
@@ -295,18 +455,15 @@ function Roadmap({ data, setData }) {
           width: 15px;
           height: 15px;
       }
-      
       .timeline-item:nth-child(odd) .timeline-item-content {
           text-align: left;
           align-items: flex-start;
       }
-      
       .timeline-item:nth-child(odd) .timeline-item-content::after {
           right: auto;
           left: -7.5px;
           box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.2);
       }
-
       .timeline-item-content .tag {
         color: #fff;
         font-size: 12px;
@@ -318,35 +475,29 @@ function Roadmap({ data, setData }) {
         position: absolute;
         text-transform: uppercase;
     }
-    
     .timeline-item:nth-child(odd) .timeline-item-content .tag {
         left: auto;
         right: 5px;
     }
-    
     .timeline-item-content time {
         color: #777;
         font-size: 12px;
         font-weight: bold;
     }
-    
     .timeline-item-content p {
         font-size: 16px;
         line-height: 24px;
         margin: 15px 0;
         max-width: 250px;
     }
-    
     .timeline-item-content a {
         font-size: 14px;
         font-weight: bold;
     }
-    
     .timeline-item-content a::after {
         content: ' ►';
         font-size: 12px;
     }
-    
     .timeline-item-content .circle {
         background-color: #fff;
         border: 3px solid #e17b77;
@@ -358,18 +509,15 @@ function Roadmap({ data, setData }) {
         height: 20px;
         z-index: 100;
     }
-    
     .timeline-item:nth-child(odd) .timeline-item-content .circle {
         right: auto;
         left: -40px;
     }
-
     @media only screen and (max-width: 1023px) {
       .timeline-item-content {
           max-width: 100%;
       }
   }
-  
   @media only screen and (max-width: 767px) {
       .timeline-item-content,
       .timeline-item:nth-child(odd) .timeline-item-content {
@@ -377,27 +525,22 @@ function Roadmap({ data, setData }) {
           text-align: center;
           align-items: center;
       }
-  
       .timeline-item-content .tag {
           width: calc(100% - 10px);
           text-align: center;
       }
-  
       .timeline-item-content time {
           margin-top: 20px;
       }
-  
       .timeline-item-content a {
           text-decoration: underline;
       }
-  
       .timeline-item-content a::after {
           display: none;
       }
   }
         `}
       </style>
-
     </React.Fragment>
   )
 }
